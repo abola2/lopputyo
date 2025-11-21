@@ -1,10 +1,24 @@
 
 #include "Hotel.h"
 #include "Utils.h"
+#include <algorithm>
 
 
-void Hotel::GenerateHotelRoom() {
-    const int rooms = numberBetween(1,2);
+int Hotel::createUniqueBookingNumber()
+{
+    //Todo load booking numbers
+    std::vector<int> numbers;
+
+    int bookingNumber;
+
+    while (std::ranges::find(numbers, bookingNumber) != numbers.end())
+    {
+        return numberBetween(10000, 99999);
+    }
+
+}
+
+void Hotel::GenerateHotelRoom(const int rooms) {
     const int price = rooms == 1 ? 100 : 150;
     const auto room = HotelRoom(price, hotelIdCounter++,rooms);
     hotelRooms.insert_or_assign(room.roomId, room);

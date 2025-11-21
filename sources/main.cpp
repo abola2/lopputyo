@@ -1,22 +1,86 @@
+#include <format>
 #include <iostream>
 #include "Hotel.h"
 #include "Utils.h"
+#include <sqlite3.h>
+#include "Sql.h"
 
 
+void executeSql(sqlite3* DB, const std::string& sql)
+{
+    char* messaggeError = nullptr;
 
-void generateHotel(Hotel &hotel) {
-    for (int i = 1; i <= TOTAL_ROOM_AMOUNT; i++) {
-        hotel.GenerateHotelRoom();
+    int exit = sqlite3_exec(DB, sql.c_str(), nullptr, nullptr, &messaggeError);
+
+    if (exit != SQLITE_OK) {
+        std::cerr << "SQL error: " << messaggeError << std::endl;
+        sqlite3_free(messaggeError);
     }
+}
+
+int queryTotalHotelRooms(sqlite3* db)
+{
+    const auto sql = "select ROOM_AMOUNT from Settings;";
+    sqlite3_stmt* stmt = nullptr;
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+        return {};
+
+    int roomCount = 0;
+    int rc = sqlite3_step(stmt);
+
+    if (rc == SQLITE_ROW) {
+        return  sqlite3_column_int(stmt, 0);
+    }
+
+    sqlite3_finalize(stmt);
+    return roomCount;
+}
+
+void generateHotel(Hotel &hotel, sqlite3* db) {
+    int rooms = queryTotalHotelRooms(db);
+    if (rooms == 0)
+    {
+        rooms = numberBetween(20,150);
+        const std::string sql2 = std::format("insert into Settings (ROOM_AMOUNT) values ({});", rooms * 2);
+        executeSql(db, sql2);
+    }
+
+    const std::string sql1 = std::format("select ROOM_AMOUNT from Settings;");
+        executeSql(db, sql1);
+
+
+    for (int i = 1; i <= rooms; i++) {
+        hotel.GenerateHotelRoom(1);
+
+        hotel.GenerateHotelRoom(2);
+    }
+}
+
+
+void createDatabase(sqlite3* db) {
+    executeSql(db, CREATE_BOOKINGS);
+    executeSql(db, CREATE_CUSTOMER);
+    executeSql(db, CREATE_ROOMS);
+    executeSql(db, CREATE_SETTINGS);
+    //There is only one connection so its recommend keep the connection open while the program runs
+
 }
 
 
 
 int main() {
     Hotel hotel = {};
+
+    sqlite3* DB;
+
+    int exit = 0;
+    exit = sqlite3_open("hotel.db", &DB);
+
+    createDatabase(DB);
     std::string name;
     int requestRoomNumber, requestRoomBedAmount, dayCount;
-    generateHotel(hotel);
+    generateHotel(hotel, DB);
     while (true) {
         std::cout << "Tervetuloa hotelliin!" << std::endl;
         std::cout << "Mikä on nimesi" << std::endl;
@@ -28,7 +92,6 @@ int main() {
 
 
         requestRoomBedAmount = GetUserInputInRange(1, 2, "Haluatko yksi vai kaksi huonetta (Paina 1 tai 2)");
-        requestRoomNumber = GetFreeHotelRoom(1, 400, "Mihinkä huoneeseen haluat? (Paina 1 tai 400)", hotel);
         dayCount = GetUserNumberInput("Montako yötä yövyt?");
         hotel.rentRoom(requestRoomNumber, dayCount, person.id);
         auto room = hotel.GetPersonRoom(person);
@@ -45,5 +108,6 @@ int main() {
         std::printf("%i yötä %i euron huoneessa maksaa yhteensä %.2f\n", room->second, room->first.price, (room->second * room->first.price) * discount);
         std::cout << "Huoneesi " << room.value().first.roomId << " sänkyjä " << room.value().first.roomAmount << std::endl;
     }
+    sqlite3_close(DB);
     return 0;
 }

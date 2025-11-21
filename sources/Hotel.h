@@ -23,7 +23,8 @@ class Hotel {
     };
 
 public:
-    void GenerateHotelRoom();
+    int createUniqueBookingNumber();
+    void GenerateHotelRoom(int rooms);
     Person GeneratePerson(std::string name);
     int GetAvailableRoomsAmount() const;
     std::optional<std::pair<Hotel::HotelRoom, int>> GetPersonRoom(const Person& p);
