@@ -5,15 +5,16 @@
 #include <unordered_map>
 #include <vector>
 
+#include "SqlManager.h"
+
 
 constexpr int TOTAL_ROOM_AMOUNT = 400;
 
-class Hotel {
+class HotelManager {
 
     struct Person {
         std::string name;
         int id;
-        int bookingNumber;
     };
 
     struct HotelRoom {
@@ -23,18 +24,13 @@ class Hotel {
     };
 
 public:
-    int createUniqueBookingNumber();
-    void GenerateHotelRoom(int rooms);
-    Person GeneratePerson(std::string name);
-    int GetAvailableRoomsAmount() const;
-    std::optional<std::pair<Hotel::HotelRoom, int>> GetPersonRoom(const Person& p);
-    std::vector<Person> GetPersons();
-    bool isRoomAvailable(int roomId) const;
-    void rentRoom(int roomId, int dayCount, int personId);
-
-
+    void bookRoomsForCustomer(const int& customerId) const;
+    int registerNewCustomer() const;
+    static void tellCustomerResult(const int& bookingNumber);
+    explicit HotelManager(const SqlManager& sql_manager);
 
 private:
+    SqlManager sql_manager_ = {};
     int personIdCounter = 0;
     int hotelIdCounter = 0;
     std::unordered_map<int, HotelRoom> hotelRooms;

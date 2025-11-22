@@ -8,10 +8,25 @@ inline int numberBetween(const int min, const int max) {
     std::random_device seeder;
     std::mt19937 engine(seeder());
     std::uniform_int_distribution dist(min, max);
+
     return dist(engine);
 }
 
-inline int GetUserNumberInput(std::string message) {
+inline int numberBetween(const long seed, const int min, const int max) {
+    std::mt19937 engine(seed);
+    std::uniform_int_distribution dist(min, max);
+
+    return dist(engine);
+}
+
+inline int createUniqueBookingNumber()
+{
+    const long seed = time(nullptr);
+    //Spec requires that booking number is between above values
+    return numberBetween(seed, 10000, 99999);
+}
+
+inline int GetUserNumberInput(const std::string& message) {
     int number = {};
     std::cout << message << std::endl;
     while (!(std::cin >> number)) {
@@ -29,18 +44,10 @@ inline double GetRandomDiscount() {
     return discounts[value];
 }
 
-inline int GetUserInputInRange(const int min, const int max, std::string message) {
+inline int GetUserInputInRange(const int min, const int max, const std::string& message) {
     int number = {};
     while (number < min || number > max) {
         number = GetUserNumberInput(message);
-    }
-    return number;
-}
-
-inline int GetFreeHotelRoom(const int min, const int max, const std::string& message, const Hotel& hotel) {
-    int number = -1;
-    while (!hotel.isRoomAvailable(number)) {
-        number = GetUserInputInRange(min, max,message);
     }
     return number;
 }

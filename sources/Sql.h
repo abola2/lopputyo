@@ -2,32 +2,50 @@
 #define LOPPUTYO_SQL_H
 #include <string>
 
+const std::string SAVE_ROOM = "insert into Rooms (BED_AMOUNT, BookingID) VALUES (?, ?);";
+const std::string SAVE_USER = "insert into Customer (NAME) values (?) RETURNING ID;";
+const std::string SAVE_BOOKING = "insert into Bookings (BOOKING_ID, DAY_COUNT, CUSTOMER_ID) values (?, ?, ?);";
+const std::string QUERY_BOOKING = "SELECT Customer.NAME, Bookings.DAY_COUNT, Rooms.BED_AMOUNT from Bookings LEFT JOIN Customer ON Customer.BookingID=Bookings.NUMBER LEFT JOIN Rooms ON Rooms.BookingID=Bookings.NUMBER WHERE Bookings.NUMBER=?";
+const std::string QUERY_ROOM_AMOUNT = "SELECT COUNT(), Settings.ROOM_AMOUNT from Rooms INNER JOIN Settings where BED_AMOUNT=?;";
+
 
 const std::string CREATE_BOOKINGS = R"(
-        CREATE TABLE IF NOT EXISTS Bookings (
-            ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-            NUMBER INTEGER NOT NULL
-        );
-        CREATE INDEX IF NOT EXISTS Bookings_ID_IDX ON Bookings(ID);
+        create table IF NOT EXISTS Bookings
+(
+    ID          INTEGER not null
+        primary key autoincrement
+        constraint Bookings_Customer__fk
+            references Customer (""),
+    BOOKING_ID  INTEGER not null,
+    DAY_COUNT   integer,
+    CUSTOMER_ID integer
+);
+
+create index IF NOT EXISTS Bookings_ID_IDX
+    on Bookings (ID);
     )";
 
 const std::string CREATE_ROOMS = R"(
-        CREATE TABLE IF NOT EXISTS Rooms (
-            ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-            BED_AMOUNT INTEGER NOT NULL,
-            BookingID INTEGER,
-            FOREIGN KEY (BookingID) REFERENCES Bookings(ID)
-        );
+        create table IF NOT EXISTS Rooms
+(
+    ID         INTEGER not null
+        primary key autoincrement,
+    BED_AMOUNT INTEGER not null,
+    BookingID  INTEGER
+        references Bookings
+);
     )";
 
 const std::string CREATE_CUSTOMER = R"(
-        CREATE TABLE IF NOT EXISTS Customer (
-            ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-            NAME TEXT NOT NULL,
-            BookingID INTEGER,
-            FOREIGN KEY (BookingID) REFERENCES Bookings(ID)
-        );
-        CREATE UNIQUE INDEX IF NOT EXISTS Customer_ID_IDX ON Customer(ID);
+        create table IF NOT EXISTS Customer
+(
+    ID   INTEGER not null
+        primary key autoincrement,
+    NAME TEXT    not null
+);
+
+create unique index IF NOT EXISTS Customer_ID_IDX
+    on Customer (ID);
     )";
 
 const std::string CREATE_SETTINGS = R"(
