@@ -1,7 +1,3 @@
-//
-// Created by abola on 11/22/25.
-//
-
 #include "SqlManager.h"
 
 #include <format>
@@ -9,7 +5,6 @@
 #include <sqlite3.h>
 #include <string>
 
-#include "HotelManager.h"
 #include "Sql.h"
 #include "Utils.h"
 
@@ -60,25 +55,30 @@ void SqlManager::generateHotel() const
     rooms = numberBetween(20,150);
     const std::string sql2 = std::format("insert into Settings (ROOM_AMOUNT) values ({});", rooms * 2);
     executeSql(sql2);
-
 }
 
-
-void SqlManager::queryBooking(const std::string& sql, const int& id) const
+std::optional<QueryResult> SqlManager::queryBooking(const std::string& sql, const int id) const
 {
     sqlite3_stmt* stmt = nullptr;
-
-    if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
-        return;
+    auto result = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+    if (result != SQLITE_OK)
+        return std::nullopt;
 
     sqlite3_bind_int(stmt, 1, id);
+    std::string name;
+    int dayCount = -1;
+    int bedAmount = -1;
     if (sqlite3_step(stmt) == SQLITE_ROW)
     {
-        std::string name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-        int dayCount  = sqlite3_column_int(stmt, 1);
-        int bedAmount  = sqlite3_column_int(stmt, 2);
+        name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+        dayCount  = sqlite3_column_int(stmt, 1);
+        bedAmount  = sqlite3_column_int(stmt, 2);
+    } else
+    {
+        return std::nullopt;
     }
     sqlite3_finalize(stmt);
+    return QueryResult(name, dayCount, bedAmount);
 }
 
 bool SqlManager::checkFreeRoomsByBedCount(const std::string& sql, const int& bedAmount) const

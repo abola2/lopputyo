@@ -38,7 +38,7 @@ inline int GetUserNumberInput(const std::string& message) {
 }
 
 inline double GetRandomDiscount() {
-    const double discounts[3]  = {0.0, 0.8, 0.9};
+    constexpr double discounts[3]  = {1.0, 0.8, 0.9};
     const auto value = numberBetween(0, 2);
 
     return discounts[value];
