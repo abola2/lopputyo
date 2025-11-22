@@ -5,7 +5,8 @@
 const std::string SAVE_ROOM = "insert into Rooms (BED_AMOUNT, BookingID) VALUES (?, ?);";
 const std::string SAVE_USER = "insert into Customer (NAME) values (?) RETURNING ID;";
 const std::string SAVE_BOOKING = "insert into Bookings (BOOKING_ID, DAY_COUNT, CUSTOMER_ID) values (?, ?, ?);";
-const std::string QUERY_BOOKING = "SELECT Customer.NAME, Bookings.DAY_COUNT, Rooms.BED_AMOUNT from Bookings LEFT JOIN Customer ON Customer.ID=Bookings.CUSTOMER_ID LEFT JOIN Rooms ON Rooms.BookingID=Bookings.BOOKING_ID WHERE Bookings.BOOKING_ID=?";
+const std::string QUERY_BOOKING_BY_BOOKING_ID = "SELECT Customer.NAME, Bookings.DAY_COUNT, Rooms.BED_AMOUNT from Bookings LEFT JOIN Customer ON Customer.ID=Bookings.CUSTOMER_ID LEFT JOIN Rooms ON Rooms.BookingID=Bookings.BOOKING_ID WHERE Bookings.BOOKING_ID=?";
+const std::string QUERY_BOOKING_BY_CUSTOMER_NAME = "SELECT Customer.NAME, Bookings.DAY_COUNT, Rooms.BED_AMOUNT from Bookings LEFT JOIN Customer ON Customer.ID=Bookings.CUSTOMER_ID LEFT JOIN Rooms ON Rooms.BookingID=Bookings.BOOKING_ID WHERE Customer.NAME=?;";
 const std::string QUERY_ROOM_AMOUNT = "SELECT COUNT(), Settings.ROOM_AMOUNT from Rooms INNER JOIN Settings where BED_AMOUNT=?;";
 
 

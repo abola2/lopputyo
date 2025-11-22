@@ -23,7 +23,8 @@ public:
     void executeSql(const std::string& sql) const;
     int queryTotalHotelRooms() const;
     void generateHotel() const;
-    std::optional<QueryResult> queryBooking(const std::string& sql, const int id) const;
+    std::optional<QueryResult> queryBookingById(const std::string& sql, const int id) const;
+    std::optional<QueryResult> queryBookingByName(const std::string& sql, const std::string& customerName) const;
     bool checkFreeRoomsByBedCount(const std::string& sql, const int& bedAmount) const;
     int saveUser(const std::string& sql, const std::string& name) const;
     void saveBooking(const std::string& sql, const int& dayCount, const int& bookingId, const int& customerId) const;

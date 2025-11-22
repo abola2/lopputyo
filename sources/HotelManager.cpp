@@ -7,8 +7,22 @@
 
 void HotelManager::checkUserBookings() const
 {
-    const int bookingNumber = GetUserNumberInput("Mikä on varausnumerosi?");
-    std::optional<QueryResult> result = sql_manager_.queryBooking(QUERY_BOOKING, bookingNumber);
+    std::optional<QueryResult> result;
+    const int searchOption = GetUserInputInRange(1, 2, "Haluatko hakea varausnumerolla [1] vai nimellä [2]?");
+    if (searchOption == 1)
+    {
+        const int bookingNumber = GetUserNumberInput("Mikä on varausnumerosi?");
+        result = sql_manager_.queryBookingById(QUERY_BOOKING_BY_BOOKING_ID, bookingNumber);
+    } else
+    {
+        std::cin.clear();
+        std::cin.ignore();
+        printf("Mikä on nimesi?\n");
+        std::string name;
+        std::getline(std::cin, name);
+        result = sql_manager_.queryBookingByName(QUERY_BOOKING_BY_CUSTOMER_NAME, name);
+    }
+
     if (result.has_value())
     {
         printf("Nimesi on %s, olet varannut huoneen %i sängyllä %i päiväksi. \n", result.value().name.c_str(), result.value().dayCount, result.value().bedAmount);
