@@ -29,13 +29,11 @@ int main() {
                 hotel.tellCustomerResult(booking_result);
                 break;
             }
-
         case State::VIEW:
             {
                 hotel.checkUserBookings();
                 break;
             }
-
         case State::CLOSE:
             {
                 printf("Ohjelma suljetaan...\n");
@@ -43,7 +41,6 @@ int main() {
                 return 0;
                 break;
             }
-
         default:
             {
                 sqlite3_close(sql_manager.database());

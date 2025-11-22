@@ -49,5 +49,4 @@ private:
     SqlManager sql_manager_ = {};
 };
 
-
 #endif //LOPPUTYO_HOTEL_H

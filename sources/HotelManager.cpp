@@ -37,16 +37,13 @@ State HotelManager::askWhatUserWantsToDo()
 
 BookingResult HotelManager::bookRoomsForCustomer(const Customer& customer) const
 {
-
-    int requestRoomBedAmount, dayCount;
-
-    requestRoomBedAmount = GetUserInputInRange(1, 2, "Haluatko yksi vai kaksi huonetta (Paina 1 tai 2)");
+    const int requestRoomBedAmount = GetUserInputInRange(1, 2, "Haluatko yksi vai kaksi huonetta (Paina 1 tai 2)");
     const bool isAvailable =  sql_manager_.checkFreeRoomsByBedCount(QUERY_ROOM_AMOUNT, requestRoomBedAmount);
     if (!isAvailable)
     {
         std::printf("Huoneita ei ole vapaana!\n");
     }
-    dayCount = GetUserInputInRange(1, INT_MAX, "Montako yötä yövyt?");
+    const int dayCount = GetUserInputInRange(1, INT_MAX, "Montako yötä yövyt?");
     const int bookingNumber = createUniqueBookingNumber();
     sql_manager_.saveBooking(SAVE_BOOKING, dayCount, bookingNumber, customer.id);
     sql_manager_.saveRoom(SAVE_ROOM, requestRoomBedAmount, bookingNumber);

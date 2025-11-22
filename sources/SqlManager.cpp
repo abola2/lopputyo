@@ -60,8 +60,8 @@ void SqlManager::generateHotel() const
 std::optional<QueryResult> SqlManager::queryBooking(const std::string& sql, const int id) const
 {
     sqlite3_stmt* stmt = nullptr;
-    auto result = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
-    if (result != SQLITE_OK)
+    auto queryResult = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+    if (queryResult != SQLITE_OK)
         return std::nullopt;
 
     sqlite3_bind_int(stmt, 1, id);
@@ -99,8 +99,6 @@ bool SqlManager::checkFreeRoomsByBedCount(const std::string& sql, const int& bed
     sqlite3_finalize(stmt);
     return (totalRooms / 2) - usedRoomsCount >= 0;
 }
-
-
 
 int SqlManager::saveUser(const std::string& sql, const std::string& name) const
 {
