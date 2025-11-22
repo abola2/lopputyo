@@ -11,15 +11,14 @@ class SqlManager
     sqlite3* db = nullptr;
 
 public:
-    ~SqlManager();
+    SqlManager();
     void executeSql(const std::string& sql) const;
     int queryTotalHotelRooms() const;
     void generateHotel() const;
     void queryBooking(const std::string& sql, const int& id) const;
     bool checkFreeRoomsByBedCount(const std::string& sql, const int& bedAmount) const;
     int saveUser(const std::string& sql, const std::string& name) const;
-    void saveBooking(const std::string& sql, const int& dayCount, const int& bookingId,
-                     const int& customerId) const;
+    void saveBooking(const std::string& sql, const int& dayCount, const int& bookingId, const int& customerId) const;
     void saveRoom(const std::string& sql, const int& bedCount, const int& id) const;
     void createDatabase() const;
     [[nodiscard]] sqlite3* database() const

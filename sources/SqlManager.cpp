@@ -14,7 +14,7 @@
 #include "Utils.h"
 
 
-SqlManager::~SqlManager()
+SqlManager::SqlManager()
 {
     sqlite3_open("hotel.db", &db);
 }
