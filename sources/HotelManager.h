@@ -1,5 +1,6 @@
 #ifndef LOPPUTYO_HOTEL_H
 #define LOPPUTYO_HOTEL_H
+#include <optional>
 #include <string>
 
 #include "SqlManager.h"
@@ -29,10 +30,10 @@ class HotelManager {
 public:
     void checkUserBookings() const;
     State askWhatUserWantsToDo();
-    BookingResult bookRoomsForCustomer(const Customer& customer) const;
+    std::optional<BookingResult> bookRoomsForCustomer(const Customer& customer) const;
     Customer registerNewCustomer() const;
-    static void tellCustomerResult(const BookingResult& booking_result);
-    void continueOrBack(const Customer& customer) const;
+    static void tellCustomerResult(const BookingResult& booking_result) ;
+    bool continueOrBack() const;
     explicit HotelManager(const SqlManager& sql_manager);
 
     [[nodiscard]] State getState() const

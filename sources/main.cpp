@@ -23,10 +23,20 @@ int main() {
         {
         case State::USER:
             {
+                bool reverseMore = false;
                 Customer customer = hotel.registerNewCustomer();
-                BookingResult booking_result = hotel.bookRoomsForCustomer(customer);
-                HotelManager::tellCustomerResult(booking_result);
-                hotel.continueOrBack(customer);
+                do
+                {
+                    std::optional<BookingResult> booking_result = hotel.bookRoomsForCustomer(customer);
+                    if (!booking_result.has_value())
+                    {
+                        continue;
+                    }
+                    HotelManager::tellCustomerResult(booking_result.value());
+                    reverseMore = hotel.continueOrBack();
+                }
+                while (reverseMore);
+
                 break;
             }
         case State::VIEW:

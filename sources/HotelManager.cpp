@@ -64,13 +64,14 @@ State HotelManager::askWhatUserWantsToDo()
     return state;
 }
 
-BookingResult HotelManager::bookRoomsForCustomer(const Customer& customer) const
+std::optional<BookingResult> HotelManager::bookRoomsForCustomer(const Customer& customer) const
 {
     const int requestRoomBedAmount = GetUserInputInRange(1, 2, Questions::BED_AMOUNT_PROMPT);
     const bool isAvailable =  sql_manager_.checkFreeRoomsByBedCount(requestRoomBedAmount);
     if (!isAvailable)
     {
         std::cout << Color::BrightRed << "Huoneita ei ole valitettavasti vapaana!" << Color::Reset << std::endl;
+        return std::nullopt;
     }
     const int dayCount = GetUserInputInRange(1, INT_MAX, Questions::DAY_AMOUNT_PROMPT);
     const int bookingNumber = createUniqueBookingNumber();
@@ -111,15 +112,10 @@ void HotelManager::tellCustomerResult(const BookingResult& booking_result)
     std::cout << "varausnumerosi on " << Color::Underline << Color::Green << booking_result.bookingID << Color::Reset << std::endl;
 }
 
-void HotelManager::continueOrBack(const Customer& customer) const
+bool HotelManager::continueOrBack() const
 {
     const int result = GetUserInputInRange(1, 2, Questions::CONTINUE_OR_RETURN_PROMPT);
-    if (result == 1)
-    {
-        const BookingResult booking_result = bookRoomsForCustomer(customer);
-        tellCustomerResult(booking_result);
-    }
-
+    return result == 1;
 }
 
 HotelManager::HotelManager(const SqlManager& sql_manager)
