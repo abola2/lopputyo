@@ -32,6 +32,7 @@ public:
     BookingResult bookRoomsForCustomer(const Customer& customer) const;
     Customer registerNewCustomer() const;
     static void tellCustomerResult(const BookingResult& booking_result);
+    void continueOrBack(const Customer& customer) const;
     explicit HotelManager(const SqlManager& sql_manager);
 
     [[nodiscard]] State getState() const

@@ -52,8 +52,4 @@ inline int GetUserInputInRange(const int min, const int max, const std::string& 
     return number;
 }
 
-inline int GenerateBookingNumber() {
-    return numberBetween(10000, 99999);
-}
-
 #endif //LOPPUTYO_UTILS_H

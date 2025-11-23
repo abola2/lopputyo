@@ -3,7 +3,7 @@
 #define LOPPUTYO_SQLMANAGER_H
 #include <string>
 #include <sqlite3.h>
-#include <optional>
+#include <vector>
 
 struct QueryResult
 {
@@ -23,18 +23,17 @@ public:
     void executeSql(const std::string& sql) const;
     int queryTotalHotelRooms() const;
     void generateHotel() const;
-    std::optional<QueryResult> queryBookingById(const std::string& sql, const int id) const;
-    std::optional<QueryResult> queryBookingByName(const std::string& sql, const std::string& customerName) const;
-    bool checkFreeRoomsByBedCount(const std::string& sql, const int& bedAmount) const;
-    int saveUser(const std::string& sql, const std::string& name) const;
-    void saveBooking(const std::string& sql, const int& dayCount, const int& bookingId, const int& customerId) const;
-    void saveRoom(const std::string& sql, const int& bedCount, const int& id) const;
+    std::vector<QueryResult> queryBookingById(int id) const;
+    std::vector<QueryResult> queryBookingByName(const std::string& customerName) const;
+    bool checkFreeRoomsByBedCount(const int& bedAmount) const;
+    int saveUser(const std::string& name) const;
+    void saveBooking(const int& dayCount, const int& bookingId, const int& customerId) const;
+    void saveRoom(const int& bedCount, const int& id) const;
     void createDatabase() const;
     [[nodiscard]] sqlite3* database() const
     {
         return db;
     }
-
 
 };
 

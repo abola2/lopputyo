@@ -3,7 +3,6 @@
 #include "HotelManager.h"
 #include "Utils.h"
 #include <sqlite3.h>
-#include "imgui.h"
 #include "SqlManager.h"
 
 
@@ -26,7 +25,8 @@ int main() {
             {
                 Customer customer = hotel.registerNewCustomer();
                 BookingResult booking_result = hotel.bookRoomsForCustomer(customer);
-                hotel.tellCustomerResult(booking_result);
+                HotelManager::tellCustomerResult(booking_result);
+                hotel.continueOrBack(customer);
                 break;
             }
         case State::VIEW:

@@ -16,12 +16,6 @@ set(PROJECT_INCLUDE "${CMAKE_CURRENT_LIST_DIR}/sources")
 
 message(STATUS "Preparing third-party library 'sqlite3'")
 
-find_package(PkgConfig REQUIRED)
-pkg_search_module(GLFW3 REQUIRED glfw3)
-
-find_package(OpenGL REQUIRED)
-
-
 include(FetchContent)
 
 FetchContent_Declare(
@@ -36,8 +30,6 @@ add_library(sqlite3_lib STATIC "${sqlite3_SOURCE_DIR}/sqlite3.c")
 set_target_properties(sqlite3_lib PROPERTIES LINKER_LANGUAGE C)
 target_include_directories(sqlite3_lib PUBLIC "${sqlite3_SOURCE_DIR}")
 
-add_subdirectory(backends)
-
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_INCLUDE}")
@@ -45,16 +37,4 @@ target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_INCLUDE}")
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
         sqlite3_lib
-        imgui
-        ${GLFW3_LIBRARIES}
-        OpenGL::GL
-        dl
-        pthread
-        X11
-        Xrandr
-        Xi
-        Xxf86vm
-        Xcursor
 )
-
-#https://www.youtube.com/watch?v=JpZv9LtxEeo

@@ -57,59 +57,56 @@ void SqlManager::generateHotel() const
     executeSql(sql2);
 }
 
-std::optional<QueryResult> SqlManager::queryBookingById(const std::string& sql, const int id) const
+std::vector<QueryResult> SqlManager::queryBookingById(const int id) const
 {
+    std::vector<QueryResult> userBookings = {};
     sqlite3_stmt* stmt = nullptr;
-    auto queryResult = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+    auto queryResult = sqlite3_prepare_v2(db, QUERY_BOOKING_BY_BOOKING_ID.c_str(), -1, &stmt, nullptr);
     if (queryResult != SQLITE_OK)
-        return std::nullopt;
+        return userBookings;
 
     sqlite3_bind_int(stmt, 1, id);
-    std::string name;
-    int dayCount = -1;
-    int bedAmount = -1;
-    if (sqlite3_step(stmt) == SQLITE_ROW)
+    while (sqlite3_step(stmt) == SQLITE_ROW)
     {
-        name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-        dayCount  = sqlite3_column_int(stmt, 1);
-        bedAmount  = sqlite3_column_int(stmt, 2);
-    } else
+        std::string name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+        int dayCount  = sqlite3_column_int(stmt, 1);
+        int bedAmount  = sqlite3_column_int(stmt, 2);
+        userBookings.push_back(QueryResult(name, dayCount, bedAmount));
+    }
+    if (userBookings.empty())
     {
-        return std::nullopt;
+        return userBookings;
     }
     sqlite3_finalize(stmt);
-    return QueryResult(name, dayCount, bedAmount);
+    return userBookings;
 }
 
-std::optional<QueryResult> SqlManager::queryBookingByName(const std::string& sql, const std::string& customerName) const
+std::vector<QueryResult> SqlManager::queryBookingByName(const std::string& customerName) const
 {
+    std::vector<QueryResult> userBookings = {};
     sqlite3_stmt* stmt = nullptr;
-    auto queryResult = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+    auto queryResult = sqlite3_prepare_v2(db, QUERY_BOOKING_BY_CUSTOMER_NAME.c_str(), -1, &stmt, nullptr);
     if (queryResult != SQLITE_OK)
-        return std::nullopt;
+        return userBookings;
 
     sqlite3_bind_text(stmt, 1, customerName.c_str(), -1, SQLITE_STATIC);
     std::string name;
-    int dayCount = -1;
-    int bedAmount = -1;
-    if (sqlite3_step(stmt) == SQLITE_ROW)
+    while (sqlite3_step(stmt) == SQLITE_ROW)
     {
-        name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-        dayCount  = sqlite3_column_int(stmt, 1);
-        bedAmount  = sqlite3_column_int(stmt, 2);
-    } else
-    {
-        return std::nullopt;
+        const std::string name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+        const int dayCount  = sqlite3_column_int(stmt, 1);
+        const int bedAmount  = sqlite3_column_int(stmt, 2);
+        userBookings.push_back(QueryResult(name, dayCount, bedAmount));
     }
     sqlite3_finalize(stmt);
-    return QueryResult(name, dayCount, bedAmount);
+    return userBookings;
 }
 
-bool SqlManager::checkFreeRoomsByBedCount(const std::string& sql, const int& bedAmount) const
+bool SqlManager::checkFreeRoomsByBedCount(const int& bedAmount) const
 {
     sqlite3_stmt* stmt = nullptr;
 
-    if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
+    if (sqlite3_prepare_v2(db, QUERY_ROOM_AMOUNT.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
         return false;
 
     sqlite3_bind_int(stmt, 1, bedAmount);
@@ -124,12 +121,12 @@ bool SqlManager::checkFreeRoomsByBedCount(const std::string& sql, const int& bed
     return (totalRooms / 2) - usedRoomsCount >= 0;
 }
 
-int SqlManager::saveUser(const std::string& sql, const std::string& name) const
+int SqlManager::saveUser(const std::string& name) const
 {
     int id = -1;
     sqlite3_stmt* stmt = nullptr;
 
-    if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
+    if (sqlite3_prepare_v2(db, SAVE_USER.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
         return -1;
 
     sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);
@@ -141,11 +138,11 @@ int SqlManager::saveUser(const std::string& sql, const std::string& name) const
     return id;
 }
 
-void SqlManager::saveBooking(const std::string& sql, const int& dayCount, const int& bookingId, const int& customerId) const
+void SqlManager::saveBooking(const int& dayCount, const int& bookingId, const int& customerId) const
 {
     sqlite3_stmt* stmt = nullptr;
 
-    if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
+    if (sqlite3_prepare_v2(db, SAVE_BOOKING.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
         return;
 
     sqlite3_bind_int(stmt, 1, bookingId);
@@ -155,11 +152,11 @@ void SqlManager::saveBooking(const std::string& sql, const int& dayCount, const 
     sqlite3_finalize(stmt);
 }
 
-void SqlManager::saveRoom(const std::string& sql, const int& bedCount, const int& id) const
+void SqlManager::saveRoom(const int& bedCount, const int& id) const
 {
     sqlite3_stmt* stmt = nullptr;
 
-    if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
+    if (sqlite3_prepare_v2(db, SAVE_ROOM.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
         return;
 
     sqlite3_bind_int(stmt, 1, bedCount);
